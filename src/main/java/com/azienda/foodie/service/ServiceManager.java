@@ -40,7 +40,7 @@ public class ServiceManager {
 	}
 
 	//registrazione
-	public String registrazione (Utente u) {
+	public void registrazione (Utente u) throws InvalidCredentialsException, InvalidFieldsException {
 		String messaggioErrore = "";
 		if(u.getEmail() == null) {
 			messaggioErrore += "email non inserita\n";
@@ -57,14 +57,15 @@ public class ServiceManager {
 		if(u.getCognome() == null) {
 			messaggioErrore += "cognome non inserito\n";
 		}
+		
 		if(utenteRepository.findUtenteByUsernameOrEmail(u.getUsername(), u.getEmail()) != null) {
-			messaggioErrore += "credenziali già utilizzate";
+			throw new InvalidCredentialsException("Credenziali non valide");
 		}
+		
 		if (messaggioErrore == "") {
 			//salvo l'utente nel db
 			utenteRepository.save(u);
-		}
-		return messaggioErrore;
+		} else throw new InvalidFieldsException(messaggioErrore);
 	}
 	
 	//esiste utente

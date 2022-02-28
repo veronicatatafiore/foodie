@@ -26,10 +26,14 @@ public class UtenteRest {
 	@PostMapping("/registrazione")
 	//tramite l'@RequestBody i parametri per il metodo post vengono passati tramite il body e non tramite l'url
 	public ResponseEntity<String> registrazione(@RequestBody Utente u){
-		String messaggioErrore = serviceManager.registrazione(u);
-		if(messaggioErrore.contains("credenziali già utilizzate")) return new ResponseEntity<>("Credenziali già utilizzate", HttpStatus.BAD_REQUEST);
-		if(messaggioErrore != "") return new ResponseEntity<>(messaggioErrore, HttpStatus.INTERNAL_SERVER_ERROR);
-		return new ResponseEntity<>("Registrazione avvenuta con successo", HttpStatus.CREATED);
+		try {
+			serviceManager.registrazione(u);
+			return new ResponseEntity<>(null, HttpStatus.CREATED);
+		} catch (InvalidCredentialsException | InvalidFieldsException e) {
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+		} catch (Exception e) {
+			return new ResponseEntity<> (e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 	
 	@PostMapping("/login")
