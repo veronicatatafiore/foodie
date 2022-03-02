@@ -26,6 +26,7 @@ public class Post {
 	private Integer numeroLike;
 	private Integer numeroUnlike;
 	private Boolean visibile;
+	private String urlImmagine;
 	
 	@ManyToOne
 	@JoinColumn(name="posts")
@@ -54,7 +55,7 @@ public class Post {
 	}
 	
 	public Post(LocalDateTime dataEOra, String descrizione, String titolo, LocalDateTime dataEOraUpdate, 
-			Integer numeroLike, Integer numeroUnlike) {
+			Integer numeroLike, Integer numeroUnlike, String urlImmagine) {
 		super();
 		this.dataEOra = dataEOra;
 		this.descrizione = descrizione;
@@ -62,6 +63,7 @@ public class Post {
 		this.dataEOraUpdate = dataEOraUpdate;
 		this.numeroLike = numeroLike;
 		this.numeroUnlike = numeroUnlike;
+		this.urlImmagine = urlImmagine;
 	}
 
 	public Integer getId() {
@@ -122,6 +124,14 @@ public class Post {
 
 	public void setVisibile(Boolean visibile) {
 		this.visibile = visibile;
+	}
+
+	public String getUrlImmagine() {
+		return urlImmagine;
+	}
+
+	public void setUrlImmagine(String urlImmagine) {
+		this.urlImmagine = urlImmagine;
 	}
 	
 }

@@ -40,7 +40,7 @@ public class UtenteRest {
 	public ResponseEntity<String> login(@RequestBody UtenteLoginDto u){
 		try {
 			serviceManager.login(u);
-			return new ResponseEntity<>("Login avvenuto con successo", HttpStatus.CREATED);
+			return new ResponseEntity<>(null, HttpStatus.OK);
 			
 		} catch (InvalidCredentialsException | InvalidFieldsException e) {
 			 return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);

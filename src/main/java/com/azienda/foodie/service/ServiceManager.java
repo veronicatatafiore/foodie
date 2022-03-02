@@ -89,7 +89,7 @@ public class ServiceManager {
 	
 	//creazione post
 	public void createPost(PostTestoDto p, Utente u) {
-		Post post = new Post(LocalDateTime.now(), p.getDescrizione(), p.getTitolo(), LocalDateTime.now(),0,0);
+		Post post = new Post(LocalDateTime.now(), p.getDescrizione(), p.getTitolo(), LocalDateTime.now(),0,0, p.getUrlImmagine());
 		post.setUtente(u);
 		post.setVisibile(true);
 		postRepository.save(post);
@@ -187,9 +187,11 @@ public class ServiceManager {
 		}
 		post.setNumeroLike(post.getNumeroLike()+1);
 		post.getLikers().add(u);
+		u.getPostLike().add(post);
 		if(post.getUnlikers().contains(u)) {
 			post.setNumeroUnlike(post.getNumeroUnlike()-1);
 			post.getUnlikers().remove(u);
+			u.getPostUnlike().remove(post);
 		}
 	}
 	
@@ -202,15 +204,17 @@ public class ServiceManager {
 		if(u.getId() == post.getUtente().getId()) {
 			throw new InvalidCredentialsException("non puoi metterti unlike da solo");
 		}
-		if(post.getLikers().contains(u)) {
+		if(post.getUnlikers().contains(u)) {
 			throw new InvalidCredentialsException("non puoi mettere unlike più di una volta");
 		}
 		System.out.println(post.getNumeroUnlike());
 		post.setNumeroUnlike(post.getNumeroUnlike()+1);
 		post.getUnlikers().add(u);
+		u.getPostUnlike().add(post);
 		if(post.getLikers().contains(u)) {
 			post.setNumeroLike(post.getNumeroLike()-1);
 			post.getLikers().remove(u);
+			u.getPostLike().remove(post);
 		}
 	}
 	

@@ -1,5 +1,6 @@
 package com.azienda.foodie.rest;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,9 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.azienda.foodie.dto.PostDataDto;
@@ -42,18 +45,19 @@ public class PostRest {
 			} catch(InvalidCredentialsException e) {
 				return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
 			}
-			return new ResponseEntity<>("Post creato con successo", HttpStatus.CREATED);
+			return new ResponseEntity<>(null, HttpStatus.CREATED);
 		} catch (Exception e) {
 			return new ResponseEntity<>("errore generico del server", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 	
 	@GetMapping("/visualizzaPost")
-	public ResponseEntity<?> visualizzaPost (@RequestBody UtenteLoginDto u){
+	public ResponseEntity<?> visualizzaPost (@RequestHeader(value = "username") String username, @RequestHeader(value = "password") String password){
+		System.out.println(username);
 		try {
 			List<Post> posts = null;
-			serviceManager.esisteUtente(u.getUsername(), u.getPassword());
-			posts = serviceManager.selectAllPost(u);
+			serviceManager.esisteUtente(username, password);
+			posts = serviceManager.selectAllPost(new UtenteLoginDto(username, password));
 			return new ResponseEntity<>(posts, HttpStatus.CREATED);
 		} catch(InvalidCredentialsException e) {
 			return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -65,10 +69,10 @@ public class PostRest {
 	}
 	
 	@GetMapping("/visualizzaPostByUtente")
-	public ResponseEntity<?> visualizzaPostByUtente (@RequestBody Utente u){
+	public ResponseEntity<?> visualizzaPostByUtente (@RequestHeader(value = "username") String username, @RequestHeader(value = "password") String password){
 		try {
 			List<Post> posts = null;
-			serviceManager.esisteUtente(u.getUsername(), u.getPassword());
+			Utente u = serviceManager.esisteUtente(username, password);
 			posts = serviceManager.selectAllPostByUtente(u);
 			return new ResponseEntity<>(posts, HttpStatus.CREATED);
 		} catch(InvalidCredentialsException e) {
@@ -76,14 +80,21 @@ public class PostRest {
 		} catch (NoPostFoundException e) {
 			return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
 		} catch (Exception e) {
+			e.printStackTrace();
 			return new ResponseEntity<>("errore generico del server", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 	
 	@GetMapping("/visualizzaPostByIntervallo")
-	public ResponseEntity<?> visualizzaPostByIntervallo(@RequestBody PostDataDto p){
+	public ResponseEntity<?> visualizzaPostByIntervallo(@RequestHeader(value = "username") String username, 
+			@RequestHeader(value = "password") String password, @RequestHeader(value = "dataInizio") String di, 
+			@RequestHeader(value = "dataFine") String df){
 		try {
+			LocalDateTime dataInizio = LocalDateTime.parse(di);
+			LocalDateTime dataFine = LocalDateTime.parse(df);
+			
 			List<Post> posts = null;
+			PostDataDto p = new PostDataDto(username, password, dataInizio, dataFine);
 			serviceManager.esisteUtente(p.getUsername(), p.getPassword());
 			posts = serviceManager.selectAllPostByIntervallo(p);
 			return new ResponseEntity<>(posts, HttpStatus.CREATED);
@@ -92,14 +103,20 @@ public class PostRest {
 		} catch (NoPostFoundException e) {
 			return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
 		} catch (Exception e) {
+			e.printStackTrace();
 			return new ResponseEntity<>("errore generico del server", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 	
 	@GetMapping("/visualizzaPostProprietarioByIntervallo")
-	public ResponseEntity<?> visualizzaPostProprietarioByIntervallo(@RequestBody PostDataDto p){
+	public ResponseEntity<?> visualizzaPostProprietarioByIntervallo(@RequestHeader(value = "username") String username, 
+			@RequestHeader(value = "password") String password, @RequestHeader(value = "dataInizio") String di, 
+			@RequestHeader(value = "dataFine") String df){
 		try {
+			LocalDateTime dataInizio = LocalDateTime.parse(di);
+			LocalDateTime dataFine = LocalDateTime.parse(df);
 			List<Post> posts = null;
+			PostDataDto p = new PostDataDto(username, password, dataInizio, dataFine);
 			Utente user=serviceManager.esisteUtente(p.getUsername(), p.getPassword());
 			posts = serviceManager.selectAllPostProprietarioByIntervallo(p,user);
 			return new ResponseEntity<>(posts, HttpStatus.CREATED);
@@ -113,9 +130,12 @@ public class PostRest {
 	}
 	
 	@GetMapping("/visualizzaPostCheContieneParola")
-	public ResponseEntity<?> visualizzaPostCheContieneParola(@RequestBody PostTestoDto p){
+	public ResponseEntity<?> visualizzaPostCheContieneParola(@RequestHeader(value = "username") String username, 
+			@RequestHeader(value = "password") String password, @RequestHeader(value = "descrizione") String descrizione, 
+			@RequestHeader(value = "titolo") String titolo){
 		try {
 			List<Post> posts = null;
+			PostTestoDto p = new PostTestoDto(username, password, titolo, descrizione);
 			serviceManager.esisteUtente(p.getUsername(), p.getPassword());
 			posts = serviceManager.selectPostByWords(p);
 			return new ResponseEntity<>(posts, HttpStatus.CREATED);
@@ -130,9 +150,12 @@ public class PostRest {
 	}
 	
 	@GetMapping("/visualizzaPostProprietarioCheContieneParola")
-	public ResponseEntity<?> visualizzaPostProprietarioCheContieneParola(@RequestBody PostTestoDto p){
+	public ResponseEntity<?> visualizzaPostProprietarioCheContieneParola(@RequestHeader(value = "username") String username, 
+			@RequestHeader(value = "password") String password, @RequestHeader(value = "descrizione") String descrizione, 
+			@RequestHeader(value = "titolo") String titolo){
 		try {
 			List<Post> posts = null;
+			PostTestoDto p = new PostTestoDto(username, password, titolo, descrizione);
 			Utente u=serviceManager.esisteUtente(p.getUsername(), p.getPassword());
 			posts = serviceManager.selectPostProprietarioByWords(p,u);
 			return new ResponseEntity<>(posts, HttpStatus.CREATED);
@@ -168,7 +191,7 @@ public class PostRest {
 			Utente u = null;
 			u = serviceManager.esisteUtente(p.getUsername(), p.getPassword());
 			serviceManager.aggiungiLike(p, p.getIdPost(), u);
-			return new ResponseEntity<>("like inserito con successo!", HttpStatus.CREATED);
+			return new ResponseEntity<>(null, HttpStatus.CREATED);
 		} catch (InvalidCredentialsException | NoPostFoundException e) {
 			return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
 		} catch (Exception e) {
@@ -182,7 +205,7 @@ public class PostRest {
 			Utente u = null;
 			u = serviceManager.esisteUtente(p.getUsername(), p.getPassword());
 			serviceManager.aggiungiUnlike(p, p.getIdPost(), u);
-			return new ResponseEntity<>("unlike inserito con successo!", HttpStatus.CREATED);
+			return new ResponseEntity<>(null, HttpStatus.CREATED);
 		} catch (InvalidCredentialsException | NoPostFoundException e) {
 			return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
 		} catch (Exception e) {
@@ -195,7 +218,7 @@ public class PostRest {
 		try {
 			serviceManager.esisteUtente(p.getUsername(), p.getPassword());
 			serviceManager.eliminaPost(p);
-			return new ResponseEntity<>("post eliminato con successo!", HttpStatus.NO_CONTENT);
+			return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
 		} catch (InvalidCredentialsException | NoPostFoundException e) {
 			return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
 		} catch (Exception e) {

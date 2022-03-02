@@ -6,6 +6,8 @@ public class PostTestoDto {
 	private String password;
 	private String titolo;
 	private String descrizione;
+	private String urlImmagine;
+	
 	public String getUsername() {
 		return username;
 	}
@@ -36,5 +38,11 @@ public class PostTestoDto {
 		this.password = password;
 		this.titolo = titolo;
 		this.descrizione = descrizione;
+	}
+	public String getUrlImmagine() {
+		return urlImmagine;
+	}
+	public void setUrlImmagine(String urlImmagine) {
+		this.urlImmagine = urlImmagine;
 	}
 }

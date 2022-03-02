@@ -39,5 +39,4 @@ public class PostDataDto {
 		this.dataFine = dataFine;
 	}
 	
-	
 }

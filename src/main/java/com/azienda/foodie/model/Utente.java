@@ -33,6 +33,7 @@ public class Utente {
 	
 	
 	@ManyToMany(mappedBy = "unlikers")
+	@JsonIgnore
 	private List<Post> postUnlike;
 	
 
@@ -40,6 +41,7 @@ public class Utente {
 	@JoinTable(name="TabellaLike", joinColumns =
 	@JoinColumn(name="id_utente3"), inverseJoinColumns = 
 	@JoinColumn(name="id_post3"))
+	@JsonIgnore
 	private List<Post> postLike;
 	
 	
@@ -53,6 +55,11 @@ public class Utente {
 		this.password = password;
 		this.username = username;
 		this.admin = admin;
+	}
+	public Utente(String username, String password) {
+		super();
+		this.password = password;
+		this.username = username;
 	}
 
 
@@ -118,5 +125,26 @@ public class Utente {
 	public void setAdmin(boolean admin) {
 		this.admin = admin;
 	}
+
+
+	public List<Post> getPostUnlike() {
+		return postUnlike;
+	}
+
+
+	public void setPostUnlike(List<Post> postUnlike) {
+		this.postUnlike = postUnlike;
+	}
+
+
+	public List<Post> getPostLike() {
+		return postLike;
+	}
+
+
+	public void setPostLike(List<Post> postLike) {
+		this.postLike = postLike;
+	}
+	
 	
 }
