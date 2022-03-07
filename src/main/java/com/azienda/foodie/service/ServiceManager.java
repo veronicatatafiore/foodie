@@ -42,30 +42,32 @@ public class ServiceManager {
 	//registrazione
 	public void registrazione (Utente u) throws InvalidCredentialsException, InvalidFieldsException {
 		String messaggioErrore = "";
-		if(u.getEmail() == null) {
-			messaggioErrore += "email non inserita\n";
+		if(u.getEmail() == null || u.getEmail().isEmpty()) {
+			messaggioErrore += "email, ";
 		}
-		if(u.getPassword() == null) {
-			messaggioErrore += "password non inserita\n";
+		if(u.getPassword() == null || u.getPassword().isEmpty()) {
+			messaggioErrore += "password, ";
 		}
-		if(u.getUsername() == null) {
-			messaggioErrore += "username non inserito\n";
+		if(u.getUsername() == null || u.getUsername().isEmpty()) {
+			messaggioErrore += "username, ";
 		}
-		if(u.getNome() == null) {
-			messaggioErrore += "nome non inserito\n";
+		if(u.getNome() == null || u.getNome().isEmpty()) {
+			messaggioErrore += "nome, ";
 		}
-		if(u.getCognome() == null) {
-			messaggioErrore += "cognome non inserito\n";
+		if(u.getCognome() == null || u.getCognome().isEmpty()) {
+			messaggioErrore += "cognome, ";
 		}
-		
+
+		if (!messaggioErrore.equals("")) {
+			throw new InvalidFieldsException("Non hai inserito: " + messaggioErrore.substring(0, messaggioErrore.length() - 2));
+		}
+
 		if(utenteRepository.findUtenteByUsernameOrEmail(u.getUsername(), u.getEmail()) != null) {
 			throw new InvalidCredentialsException("Credenziali non valide");
 		}
-		
-		if (messaggioErrore == "") {
-			//salvo l'utente nel db
-			utenteRepository.save(u);
-		} else throw new InvalidFieldsException(messaggioErrore);
+
+		//salvo l'utente nel db
+		utenteRepository.save(u);
 	}
 	
 	//esiste utente
